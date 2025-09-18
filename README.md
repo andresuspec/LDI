@@ -7,20 +7,22 @@ La imagen se construye desde cero e instala todas las dependencias listadas en `
 
 ## 📂 Estructura del proyecto
 
+```
 LDI/
-├── Dockerfile # Imagen base con Python + dependencias
-├── docker-compose.yml # Configuración de servicios Docker
-├── requirements.txt # Lista de dependencias de Django y librerías
+├── Dockerfile            # Imagen base con Python + dependencias
+├── docker-compose.yml    # Configuración de servicios Docker
+├── requirements.txt      # Lista de dependencias de Django y librerías
 ├── django/
-│ ├── manage.py # Script principal de Django
-│ └── app/ # Código fuente del proyecto
-│ ├── init.py
-│ ├── settings.py # Configuración de Django
-│ ├── urls.py # Rutas principales
-│ └── wsgi.py # Entrada WSGI
+│   ├── manage.py         # Script principal de Django
+│   └── app/              # Código fuente del proyecto
+│       ├── __init__.py
+│       ├── settings.py   # Configuración de Django
+│       ├── urls.py       # Rutas principales
+│       └── wsgi.py       # Entrada WSGI
 ├── nginx/
-│ └── nginx.conf # Configuración del Nginx
-└── start.sh # Script para crear el Django en caso que no exista
+│   └── nginx.conf        # Configuración del Nginx
+└── start.sh              # Script para crear el Django en caso que no exista
+```
 
 
 ---
