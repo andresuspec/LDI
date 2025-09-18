@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  # Servicio de Base de Datos PostgreSQL
+  db:
+    image: postgres:13
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: mydatabase
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
+    ports:
+      - "5432:5432"
+    networks:
+      - app-network
+
+  # Servicio de Django (web)
+  web:
+    build: .
+    command: bash -c "./start.sh"
+    volumes:
+      - .:/app               # Montas todo tu repo
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    networks:
+      - app-network
+
+  # Servicio de Nginx
+  nginx:
+    image: nginx:alpine
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./static:/app/static
+      - ./media:/app/media
+    ports:
+      - "80:80"
+    depends_on:
+      - web
+    networks:
+      - app-network
+
+volumes:
+  postgres_data:
+
+networks:
+  app-network:
+    driver: bridge
