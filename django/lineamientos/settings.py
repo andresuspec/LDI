@@ -12,9 +12,11 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 
 from pathlib import Path
 import os
+from dotenv import load_dotenv
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
+load_dotenv(os.path.join(BASE_DIR, ".env"))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
@@ -23,9 +25,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-g+y#p1ju^t^qs9q&l-t)-@(%9het(-s#@0!l4whce-*k(#oer4'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv("DEBUG", "False") == "True"
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "localhost").split(",")
 
 
 # Application definition
@@ -130,10 +132,11 @@ STATICFILES_DIRS = [
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-FORGE_CLIENT_ID = "iZd9khRS4OEAz5L0zqOaNOZZ03LNkKALX8sTmg5yiGUyE0SB"
-FORGE_CLIENT_SECRET = "D07UTCz63B5YqMJW0g8xq43bd3WSre7G6zcAQ3vLenqcaNSa01GSZ19dsr1nODMX"
-FORGE_BUCKET_KEY = "lineamientosBucket"
-FORGE_REGION = "US"
+FORGE_CLIENT_ID = os.getenv("FORGE_CLIENT_ID")
+FORGE_CLIENT_SECRET = os.getenv("FORGE_CLIENT_SECRET")
+FORGE_BUCKET_KEY = os.getenv("FORGE_BUCKET_KEY")
+FORGE_REGION = os.getenv("FORGE_REGION")
+
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,

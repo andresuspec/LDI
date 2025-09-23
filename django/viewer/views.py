@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.conf import settings
-from .forge_utils import (
+from .services import (
     get_access_token,
     create_bucket_if_not_exists,
     upload_file,

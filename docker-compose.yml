@@ -18,9 +18,10 @@ services:
   # Servicio de Django (web)
   web:
     build: .
-    command: bash -c "./start.sh"
+    command: bash -c "/start.sh"
     volumes:
-      - .:/app               # Montas todo tu repo
+      - .:/app
+      - ./start.sh:/start.sh:ro # Monta todo tu repo
     ports:
       - "8000:8000"
     depends_on:

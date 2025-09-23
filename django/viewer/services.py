@@ -1,48 +1,98 @@
+import base64
 import requests
-import json
-import os
+from django.conf import settings
+import logging
+from django.conf import settings
 
-# Configuración de Forge
-FORGE_CLIENT_ID = "iZd9khRS4OEAz5L0zqOaNOZZ03LNkKALX8sTmg5yiGUyE0SB"
-FORGE_CLIENT_SECRET = "D07UTCz63B5YqMJW0g8xq43bd3WSre7G6zcAQ3vLenqcaNSa01GSZ19dsr1nODMX"
-FORGE_BUCKET = "test-lineamientos"
-FORGE_SCOPES = "data:read data:write viewables:read"
+logger = logging.getLogger(__name__)
 
-# Función para obtener el token de acceso
+AUTH_URL = "https://developer.api.autodesk.com/authentication/v2/token"
+OSS_URL = "https://developer.api.autodesk.com/oss/v2/buckets"
+DERIVATIVE_URL = "https://developer.api.autodesk.com/modelderivative/v2/designdata"
+
 def get_access_token():
-    url = "https://developer.api.autodesk.com/authentication/v1/authenticate"
-    headers = {
-        "Content-Type": "application/x-www-form-urlencoded"
-    }
-    payload = {
-        "client_id": FORGE_CLIENT_ID,
-        "client_secret": FORGE_CLIENT_SECRET,
+    data = {
+        "client_id": settings.FORGE_CLIENT_ID,
+        "client_secret": settings.FORGE_CLIENT_SECRET,
         "grant_type": "client_credentials",
-        "scope": FORGE_SCOPES
+        "scope": "data:read data:write data:create bucket:read bucket:create bucket:delete"
     }
-    response = requests.post(url, data=payload, headers=headers)
-    if response.status_code == 200:
-        return response.json()['access_token']
+    headers = {"Content-Type": "application/x-www-form-urlencoded"}
+    r = requests.post(AUTH_URL, data=data, headers=headers)
+    r.raise_for_status()
+    token = r.json()["access_token"]
+    logger.debug("DEBUG >>> token obtenido: %s", token)
+    return token
+
+def create_bucket_if_not_exists(token):
+    bucket_key = settings.FORGE_BUCKET_KEY.lower()
+    headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json", "x-ads-region": "US"}
+    data = {"bucketKey": bucket_key, "policyKey": "persistent"}
+    r = requests.post(OSS_URL, headers=headers, json=data)
+    if r.status_code == 409:  # ya existe
+        logger.debug("DEBUG >>> Bucket ya existía: %s", bucket_key)
+    elif r.status_code == 200:
+        logger.debug("DEBUG >>> Bucket creado: %s", bucket_key)
     else:
-        raise Exception("Error al obtener el token de acceso")
+        r.raise_for_status()
+    return bucket_key
 
-# Función para subir el archivo a Forge
-def upload_file_to_forge(file_path):
-    access_token = get_access_token()
-    url = f"https://developer.api.autodesk.com/oss/v2/buckets/{FORGE_BUCKET}/objects"
-    headers = {
-        "Authorization": f"Bearer {access_token}",
-    }
+def upload_file(token, file_path, object_name, bucket_key):
+    # 1. Obtener pre-signed URL
+    headers = {"Authorization": f"Bearer {token}", "x-ads-region": "US"}
+    url = f"{OSS_URL}/{bucket_key}/objects/{object_name}/signeds3upload"
+    r = requests.get(url, headers=headers)
+    r.raise_for_status()
+    signed_data = r.json()
 
-    if not os.path.exists(file_path):
-        raise Exception(f"El archivo {file_path} no existe en el sistema local")
+    # 2. Subir archivo a S3
+    s3_url = signed_data["urls"][0]
+    with open(file_path, "rb") as f:
+        r2 = requests.put(s3_url, data=f)
+        r2.raise_for_status()
+    logger.debug("DEBUG >>> Archivo subido a S3")
 
-    # Abrir el archivo y subirlo a Forge
-    with open(file_path, 'rb') as file:
-        files = {'file': file}
-        response = requests.post(url, headers=headers, files=files)
+    # 3. Confirmar upload
+    upload_key = signed_data.get("uploadKey")
+    etag = r2.headers.get("ETag", "").replace('"','')
+    body = {"uploadKey": upload_key, "parts": [{"partNumber": 1, "etag": etag}]}
+    r3 = requests.post(url, headers=headers, json=body)
+    r3.raise_for_status()
+    object_id = r3.json().get("objectId")
+    if not object_id:
+        # fallback a URN de bucket/object
+        object_id = f"urn:adsk.objects:os.object:{bucket_key}/{object_name}"
+    logger.debug("DEBUG >>> objectId final: %s", object_id)
+    return object_id
 
-    if response.status_code == 200:
-        return response.json()  # Devuelve la respuesta de Forge, que incluye objectId y metadata
-    else:
-        raise Exception("Error al subir el archivo a Forge: " + response.text)
+def translate_file(token, object_id):
+    if not isinstance(object_id, str):
+        raise TypeError("object_id debe ser una cadena")
+    urn = base64.b64encode(object_id.encode()).decode().rstrip("=")
+    headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
+    job_data = {"input": {"urn": urn}, "output": {"formats": [{"type": "svf", "views": ["2d", "3d"]}]}}
+    r = requests.post(f"{DERIVATIVE_URL}/job", headers=headers, json=job_data)
+    try:
+        r.raise_for_status()
+    except requests.exceptions.HTTPError as e:
+        logger.error("Error MD API (403/Forbidden). Revisa token, scopes y bucket ownership: %s", e)
+        raise
+    logger.debug("DEBUG >>> Traducción solicitada correctamente")
+    return urn
+
+def list_objects_in_bucket(token, bucket_key):
+    headers = {"Authorization": f"Bearer {token}"}
+    url = f"{OSS_URL}/{bucket_key}/objects"
+    r = requests.get(url, headers=headers)
+    r.raise_for_status()
+    objects = r.json().get("items", [])
+    return [obj["objectKey"] for obj in objects]
+
+def check_translation_status(token, object_id):
+    headers = {"Authorization": f"Bearer {token}"}
+    urn_base64 = base64.b64encode(object_id.encode()).decode().rstrip("=")
+    r = requests.get(f"https://developer.api.autodesk.com/modelderivative/v2/designdata/{urn_base64}/manifest", headers=headers)
+    if r.status_code == 200:
+        manifest = r.json()
+        return manifest.get("status") == "success"
+    return False
