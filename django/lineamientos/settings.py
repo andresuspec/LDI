@@ -58,7 +58,7 @@ ROOT_URLCONF = 'lineamientos.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -121,16 +121,20 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
-# app/settings/base.py
-STATIC_URL = '/static/'
-MEDIA_URL = '/media/'
+PROJECT_ROOT = BASE_DIR.parent                     # apunta a app/
 
-# Directorios para los archivos estáticos y de medios
+STATIC_URL = "/static/"
+
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'django', 'viewer', 'static'),
+    PROJECT_ROOT / "static_build",  # salida de Webpack
+    PROJECT_ROOT / "static",        # archivos manuales
 ]
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+STATIC_ROOT = PROJECT_ROOT / "staticfiles"
+
+MEDIA_URL = "/media/"
+MEDIA_ROOT = PROJECT_ROOT / "media"
+
 
 FORGE_CLIENT_ID = os.getenv("FORGE_CLIENT_ID")
 FORGE_CLIENT_SECRET = os.getenv("FORGE_CLIENT_SECRET")

@@ -1,0 +1,79 @@
+.sidebar {
+    position: fixed;
+    top: 100px; /* altura del header */
+    left: 0;
+    height: calc(100% - 100px);
+    width: 60px;
+    background-color: #f8f9fa;
+    border-right: 1px solid #ddd;
+    overflow-x: hidden;
+    transition: width 0.3s;
+    z-index: 1000;
+  }
+
+  .sidebar:hover {
+    width: 250px;
+  }
+
+  /* Ocultar texto cuando sidebar está colapsado */
+  .sidebar .nav-text {
+    display: none;
+    margin-left: 10px;
+    white-space: nowrap;
+  }
+
+  .sidebar:hover .nav-text {
+    display: inline;
+  }
+
+  /* Links */
+  .sidebar .nav-link {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    color: #333;
+    text-decoration: none;
+  }
+
+  .sidebar .nav-link:hover {
+    background: #e9ecef;
+  }
+
+  /* Área principal */
+  .content-wrapper {
+    transition: padding-left 0.3s;
+    height: 500px; /* ajusta con tu header */
+    display: flex;
+    flex-direction: column;
+  }
+
+  .sidebar:hover ~ .content-wrapper {
+    padding-left: 250px; /* sidebar expandido */
+  }
+
+  .main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .main-content #forgeViewer {
+    flex: 1;
+  }
+
+  #viewer-container {
+    flex: 1;
+    position: relative;  /* <-- clave para que el viewer se quede dentro */
+    width: 100%;
+    height: calc(100vh - 150px); /* ajusta según header y márgenes */
+    border: 1px solid #ccc;
+    overflow: hidden; /* evita que se "escape" */
+  }
+
+  #forgeViewer {
+    position: absolute;  /* Forge viewer dibuja en absoluto */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }

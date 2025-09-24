@@ -1,0 +1,50 @@
+footer {
+    background: $white;
+    color: $primary;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3); // sombra suave inferior
+    z-index: 1030; // Asegura que quede por encima
+        .navbar-brand > img{
+            max-width: 170px;
+        }
+    
+    li a {
+        color: $primary;
+        &:hover {
+            color: $primary;
+        }
+    }
+    .footer-link {
+        display: block;
+        color: $primary;
+        margin-bottom: 0.75rem;
+        text-decoration: none;
+        transition: color 0.2s ease;
+
+        &:hover {
+            color: #ffd600; // amarillo suave
+        }
+    }
+
+    .social-icon {
+        font-size: 1.5rem;
+        margin-left: 0.5rem;
+        color: $primary;
+        transition: transform 0.2s ease;
+
+        &:first-child {
+            margin-left: 0;
+        }
+
+        &:hover {
+            color: $primary;
+            opacity: 0.7;
+        }
+    }
+
+    .icon-placeholder {
+        i {
+            font-size: 3rem;
+        }
+    }
+}
+

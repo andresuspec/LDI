@@ -1,0 +1,43 @@
+// 1. Abstracts
+@import 'abstracts/variables';
+@import '../../../node_modules/bootstrap/scss/bootstrap.scss';
+@import 'abstracts/mixins';
+
+ 
+// 2. Base
+@import 'base/typography';
+@import 'base/utilities';
+
+// 3. Layout
+@import 'layout/header';
+@import 'layout/sidebar';
+@import 'layout/footer';
+
+// 4. Components
+//@import 'components/buttons';
+//@import 'components/cards';
+//@import 'components/navbar';
+
+// 5. Pages
+//@import 'pages/course_detail';
+@import 'pages/home';
+//@import 'pages/login'; 
+
+html, body {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+ /*overflow: hidden; /* solo si estamos seguros de que nada debe salirse */
+}
+body {
+    
+}
+
+main.container {
+  margin-top: 4rem !important;
+  padding-top: 4rem !important;
+  z-index: 1;
+  min-height: 600px;
+}
+  

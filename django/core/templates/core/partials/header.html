@@ -1,0 +1,43 @@
+{% load static %}
+<header class="fixed-top">
+  <nav class="navbar navbar-expand-lg shadow-sm">
+    <div class="container-fluid">
+
+      <!-- Botón hamburguesa -->
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent"
+        aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+        Menu
+      </button>
+
+      <!-- Logo -->
+      <a class="navbar-brand ms-3" href="/">
+        <img src="{% static 'images/logo.jpeg' %}"
+             alt="Logo" width="80" class="d-inline-block align-text-top">
+      </a>
+
+      <!-- Barra de búsqueda -->
+      <form class="d-flex mx-5 w-50">
+        <input class="form-control me-2" type="search" placeholder="Búsqueda LDI" aria-label="Búsqueda">
+        <button class="btn btn-outline-primary" type="submit">
+          <i class="bi bi-search text-white"></i>
+        </button>
+      </form>
+
+      <!-- Botones de acción -->
+      <div class="collapse navbar-collapse justify-content-end" id="navbarContent">
+        <ul class="navbar-nav mb-2 mb-lg-0 align-items-center">
+          <li class="nav-item">
+            <a class="btn btn-sm btn-primary me-2" href="/#">Registrarse</a>
+          </li>
+          <li class="nav-item">
+            <a class="btn btn-sm btn-outline-secondary" href="/#">
+              <i class="bi bi-person"></i> Ingresar
+            </a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </nav>
+</header>

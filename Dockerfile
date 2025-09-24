@@ -1,27 +1,31 @@
-# Usa una imagen base oficial de Python
 FROM python:3.9-slim
 
-# Instala las dependencias necesarias
+# Instala Node.js, npm y dependencias python
 RUN apt-get update && apt-get install -y \
+    curl \
     libpq-dev \
     gcc \
     g++ \
     && rm -rf /var/lib/apt/lists/*
 
-# Establece el directorio de trabajo
+# Instala Node.js 16 (o la versión que quieras)
+RUN curl -fsSL https://deb.nodesource.com/setup_16.x | bash - && \
+    apt-get install -y nodejs
+
 WORKDIR /app
 
-# Copia todos los archivos del proyecto
+COPY package*.json /app/
 COPY . /app/
 
-# Da permisos de ejecución al script start.sh
-RUN chmod +x /app/start.sh
+RUN npm install
 
-# Instala las dependencias de Python
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Exponer el puerto para el servidor Django
+# Compila el SCSS en CSS
+ARG NODE_ENV=development
+RUN if [ "$NODE_ENV" = "production" ]; then npm run build; else npm run build-dev; fi
+
+
 EXPOSE 8000
 
-# Comando por defecto (esto se puede modificar en docker-compose)
 CMD ["bash", "-c", "/app/start.sh"]

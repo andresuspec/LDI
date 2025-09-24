@@ -1,0 +1,37 @@
+header {
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3); // sombra suave inferior
+    z-index: 1030; // Asegura que quede por encima
+    background: $primary;
+    color: $white;
+    .navbar-brand > img{
+        max-width: 120px;
+    }
+    .bi-bell-fill {
+        color: $white;
+    }
+
+    .dropdown-menu {
+        border: 1px solid rgba(0, 0, 0, 0.1); // borde fino
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); // sombra sutil
+        border-radius: 0.5rem;
+        padding: 0.5rem;
+    }
+
+    .dropdown-menu li {
+        border-bottom: 1px solid #dee2e6; // color sutil de borde
+        padding: 0.5rem 1rem;
+        
+        &:last-child {
+            border-bottom: none;
+        }
+        &.user-footer {
+            width: 100%;
+            text-align: right;
+            a {
+                text-align: end;
+
+            }
+        }
+    }
+}
+

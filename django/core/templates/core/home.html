@@ -1,0 +1,45 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% block extrajs %}
+<script>
+  window.forgeConfig = {
+    urn: "{{ urn|escapejs }}",
+    token: "{{ token|escapejs }}"
+  };
+</script>
+<script src="https://developer.api.autodesk.com/modelderivative/v2/viewers/7.*/viewer3D.min.js"></script>
+<script src="{% static 'bundles/app.bundle.js' %}"></script>
+{% endblock %}
+{% block extracss %}
+<link rel="stylesheet" href="https://developer.api.autodesk.com/modelderivative/v2/viewers/7.*/style.min.css" />
+{% endblock %}
+{% block title %}Home{% endblock %}
+
+
+
+{% block content %}
+<div class="sidebar p-2">
+  <nav class="nav flex-column">
+    <a href="#" class="nav-link">
+      <i class="bi bi-house"></i>
+      <span class="nav-text">Inicio</span>
+    </a>
+    <a href="#" class="nav-link">
+      <i class="bi bi-search"></i>
+      <span class="nav-text">Buscar</span>
+    </a>
+    <a href="#" class="nav-link">
+      <i class="bi bi-gear"></i>
+      <span class="nav-text">Configuración</span>
+    </a>
+  </nav>
+</div>
+<div class="content-wrapper">
+  <div class="main-content">
+    <h5>Autodesk Viewer</h5>
+    <div id="viewer-container">
+      <div id="forgeViewer"></div>
+    </div>
+  </div>
+</div>
+{% endblock %}
