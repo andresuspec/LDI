@@ -39,9 +39,64 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'core',
+    "social_django",
+    "widget_tweaks",
+    "users",
+    "core",
+    'templates_project',
+    'planimetries',
+    'zones',
+    'buildings',
     'viewer',
 ]
+
+AUTH_USER_MODEL = "users.User"
+
+AUTHENTICATION_BACKENDS = (
+    'social_core.backends.google.GoogleOAuth2',
+    'django.contrib.auth.backends.ModelBackend',
+)
+
+LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = '/home/'
+LOGOUT_REDIRECT_URL = '/login/'
+SOCIAL_AUTH_LOGIN_ERROR_URL = '/login-error/'
+
+SOCIAL_AUTH_REDIRECT_IS_HTTPS = False
+SOCIAL_AUTH_URL_NAMESPACE = "social"
+SOCIAL_AUTH_USERNAME_IS_FULL_EMAIL = True
+
+SOCIAL_AUTH_GOOGLE_OAUTH2_USE_UNIQUE_USER_ID = True
+SOCIAL_AUTH_GOOGLE_OAUTH2_IGNORE_DEFAULT_SCOPE = True
+SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = [
+    'https://www.googleapis.com/auth/userinfo.email',
+    'https://www.googleapis.com/auth/userinfo.profile',
+]
+SOCIAL_AUTH_GOOGLE_OAUTH2_EXTRA_DATA = ['email', 'first_name', 'last_name']
+
+SOCIAL_AUTH_USER_FIELDS = ['email', 'first_name', 'last_name']
+SOCIAL_AUTH_PROTECTED_USER_FIELDS = ['email', 'role', 'first_name', 'last_name']
+SOCIAL_AUTH_CLEAN_USERNAME_FUNCTION = 'social_core.utils.slugify'
+
+# Credenciales de Google
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.getenv('SOCIAL_AUTH_GOOGLE_OAUTH2_KEY', 'social_google')
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.getenv('SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET', 'social_google')
+SOCIAL_AUTH_GOOGLE_OAUTH2_REDIRECT_URI = os.getenv("SOCIAL_AUTH_GOOGLE_OAUTH2_REDIRECT_URI")
+
+# Pipelines personalizados
+SOCIAL_AUTH_PIPELINE = (
+    "social_core.pipeline.social_auth.social_details",
+    "social_core.pipeline.social_auth.social_uid",
+    "social_core.pipeline.social_auth.auth_allowed",
+    "social_core.pipeline.social_auth.social_user",
+    'social_core.pipeline.user.get_username',
+    "users.pipeline.validate_uspec_user",
+    "users.pipeline.create_user_with_email",
+    'social_core.pipeline.social_auth.associate_user',
+    'social_core.pipeline.social_auth.load_extra_data',
+    "users.pipeline.sync_user_role",
+    "social_core.pipeline.user.user_details",
+)
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -49,6 +104,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    "core.middleware.LoginRequiredMiddleware",
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -79,8 +135,20 @@ WSGI_APPLICATION = 'lineamientos.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': os.getenv('MAIN_MYSQL_DATABASE', 'USPEC_RRHH'),
+        'USER': os.getenv('MAIN_MYSQL_USER', 'uspecUser'),
+        'PASSWORD': os.getenv('MAIN_MYSQL_PASSWORD', '12qwaszx'),
+        'HOST': os.getenv('MAIN_MYSQL_HOST', 'db'),
+        'PORT': os.getenv('MAIN_MYSQL_PORT', '3306'),
+    },
+    'especaps': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': os.getenv('USPECAPS_DATABASE', 'USPEC_RRHH'),
+        'USER': os.getenv('USPECAPS_USER', 'uspecUser'),
+        'PASSWORD': os.getenv('USPECAPS_PASSWORD', '12qwaszx'),
+        'HOST': os.getenv('USPECAPS_HOST', 'db'),
+        'PORT': os.getenv('USPECAPS_PORT', '3306'),
     }
 }
 
@@ -142,16 +210,18 @@ FORGE_BUCKET_KEY = os.getenv("FORGE_BUCKET_KEY")
 FORGE_REGION = os.getenv("FORGE_REGION")
 
 LOGGING = {
-    "version": 1,
-    "disable_existing_loggers": False,
-    "handlers": {
-        "console": {
-            "class": "logging.StreamHandler",
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
         },
     },
-    "root": {
-        "handlers": ["console"],
-        "level": "DEBUG",  # 👈 importante
+    'loggers': {
+        'social_django': {'handlers': ['console'], 'level': 'DEBUG'},
+        'social': {'handlers': ['console'], 'level': 'DEBUG'},
+        'users.pipeline': {'handlers': ['console'], 'level': 'DEBUG'},
+        'django': {'handlers': ['console'], 'level': 'INFO'},
     },
 }
 

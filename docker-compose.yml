@@ -1,16 +1,33 @@
-version: '3.8'
-
 services:
-  db:
-    image: postgres:13
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
+  # Contenedor para la base de datos principal
+  db_main:
+    image: mysql:8.0
+    container_name: db_main
     environment:
-      POSTGRES_DB: mydatabase
-      POSTGRES_USER: myuser
-      POSTGRES_PASSWORD: mypassword
+      MYSQL_ROOT_PASSWORD: rootpassword  
+      MYSQL_DATABASE: mydatabase  
+      MYSQL_USER: myuser
+      MYSQL_PASSWORD: mypassword
+    volumes:
+      - mysql_data:/var/lib/mysql  # Persistencia de datos
     ports:
-      - "5432:5432"
+      - "3310:3306"  # Mapea el puerto 3306 del contenedor al puerto 3306 en tu máquina
+    networks:
+      - app-network
+
+  # Contenedor para la base de datos de usuarios
+  db_users:
+    image: mysql:8.0
+    container_name: db_users
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: usersdb
+      MYSQL_USER: users_user
+      MYSQL_PASSWORD: users_password
+    volumes:
+      - mysql_data_users:/var/lib/mysql
+    ports:
+      - "3311:3306"
     networks:
       - app-network
 
@@ -23,12 +40,14 @@ services:
     ports:
       - "8000:8000"
     depends_on:
-      - db
+      - db_main
+      - db_users
     networks:
       - app-network
 
 volumes:
-  postgres_data:
+  mysql_data:
+  mysql_data_users:
 
 networks:
   app-network:

@@ -6,6 +6,7 @@ const CopyWebpackPlugin = require("copy-webpack-plugin");
 module.exports = {
   entry: {
     app: "./django/assets/js/viewer.js",   // tu entrada principal de JS
+    login_intro: "./django/assets/js/login_intro.js",
     styles: "./django/assets/scss/main.scss",
   },
   output: {

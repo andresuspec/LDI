@@ -1,20 +1,168 @@
-.login-wrapper {
+body, html {
+  height: 100%;
+  font-family: 'Roboto', sans-serif;
+  background-color: #fff;
+}
+
+/* --- Animación Intro --- */
+#intro {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(circle at center, #0f1113 0%, #050607 100%);
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 100vh;
-  background-image: url('/static/images/background-login.jpeg');
-  background-size: cover;
+  flex-direction: column;
+  color: #fff;
+  font-family: 'Oswald', sans-serif;
+  z-index: 1000;
+  overflow: hidden;
 }
 
-.bg-form-login {
-  height: 100vh;
-  background-image: url('/static/images/bg-form.jpg');
+.intro-bg {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-image: url("../images/img-bg-login.png"); // ✅ ruta relativa a /django/assets/images
   background-size: cover;
+  background-position: center;
+  filter: brightness(0.4) blur(2px);
+  transform: scale(1.1);
 }
 
-.shadow-end {
-  box-shadow: 4px 0 10px rgba(0, 0, 0, 0.5); /* Sombra al lado derecho */
-  z-index: 1;
+.intro-grid {
+  position: absolute;
+  width: 120%;
+  height: 120%;
+  background-image: linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px),
+                    linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px);
+  background-size: 60px 60px;
+  transform: rotateX(65deg) translateY(150px);
+  opacity: 0;
 }
-  
+
+.intro-logo {
+  font-size: 5rem;
+  letter-spacing: 12px;
+  opacity: 0;
+  transform: translateY(50px) scale(0.9);
+}
+
+.intro-pulse {
+  width: 100px;
+  height: 100px;
+  border: 2px solid #0ff;
+  border-radius: 50%;
+  opacity: 0;
+  position: absolute;
+}
+
+/* --- Oculta el login al inicio --- */
+#login-content {
+  opacity: 0;
+  transition: opacity 1s ease;
+}
+
+/* --- Login layout --- */
+.login-container {
+  display: flex;
+  height: 100vh;
+}
+
+.login-form {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem 4rem;
+}
+
+.login-form h1 {
+  font-weight: 400;
+  letter-spacing: 2px;
+  margin-bottom: 0.2rem;
+}
+
+.login-form h2 {
+  font-weight: 300;
+  font-size: 1.4rem;
+  margin-bottom: 1rem;
+}
+
+.login-form form {
+  width: 100%;
+  max-width: 360px;
+}
+
+.btn-google {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  width: 100%;
+  padding: 0.6rem;
+  font-weight: 500;
+  margin-bottom: 1rem;
+}
+
+.btn-google img {
+  height: 20px;
+  margin-right: 8px;
+  vertical-align: middle;
+}
+
+.form-control {
+  border-radius: 6px;
+  margin-bottom: 0.5rem;
+}
+
+.invalid-feedback {
+  display: block;
+  font-size: 0.85rem;
+}
+
+.login-btn {
+  width: 100%;
+  padding: 0.6rem;
+  background-color: #0d6efd;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+}
+
+.login-btn:hover {
+  background-color: #0b5ed7;
+}
+
+.forgot {
+  display: block;
+  text-align: center;
+  margin-top: 0.8rem;
+  font-size: 0.9rem;
+  text-decoration: none;
+}
+
+.copyright {
+  margin-top: 2rem;
+  font-size: 0.8rem;
+  text-align: center;
+  color: #777;
+}
+
+/* --- Imagen lateral --- */
+.image-side {
+  flex: 1;
+  background-image: url("../images/img-bg-login.png"); // ✅ misma lógica de Webpack
+  background-size: cover;
+  background-position: center;
+}
+
+/* --- Responsive --- */
+@media (max-width: 992px) {
+  .image-side {
+    display: none;
+  }
+  .login-form {
+    flex: 1 1 100%;
+    padding: 2rem;
+  }
+}

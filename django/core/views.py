@@ -18,13 +18,13 @@ def home(request):
 
 def upload_local_dwg(request):
     try:
-        file_path = os.path.join(settings.BASE_DIR, "viewer", "static", "dwg_files", "file-test.dwg")
+        file_path = os.path.join(settings.BASE_DIR, "viewer", "static", "dwg_files", "ARQ_DIN_UDI.dwg")
         if not os.path.exists(file_path):
             return render(request, "error.html", {"message": "Archivo DWG no encontrado"})
 
         token = get_access_token()
         bucket_key = create_bucket_if_not_exists(token)
-        object_name = "file-test.dwg"
+        object_name = "ARQ_DIN_UDI.dwg"
 
         existing_objects = list_objects_in_bucket(token, bucket_key)
         object_id = f"urn:adsk.objects:os.object:{bucket_key}/{object_name}"

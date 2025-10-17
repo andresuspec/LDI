@@ -1,0 +1,40 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Iniciar sesión</title>
+    <link rel="stylesheet" href="{% static 'bundles/styles.css' %}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+</head>
+<body>
+
+    <!-- 🔷 INTRO ANIMACIÓN -->
+    <div id="intro">
+        <div class="intro-bg"></div>
+        <div class="intro-grid"></div>
+        <div class="intro-logo">NEXUS</div>
+        <div class="intro-pulse"></div>
+    </div>
+
+    <!-- 🔶 LOGIN REAL -->
+    <div id="login-content" class="login-container">
+        <div class="login-form">
+            <h1>NEXUS</h1>
+            <h2>Lineamientos de infraestructura</h2>
+
+            {% include "users/_google_button.html" %}
+            {% include "users/_login_form.html" with form=form %}
+
+            <div class="copyright">
+                Todos los derechos reservados USPEC 2025<br>
+                <a href="#" class="text-decoration-none">Política de privacidad</a>
+            </div>
+        </div>
+        <div class="image-side"></div>
+    </div>
+
+    <!-- GSAP -->
+    <script src="{% static 'bundles/login_intro.bundle.js' %}"></script>
+</body>
+</html>
